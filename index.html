@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OptiTransfer | Optical Data Transfer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <!-- Offline-capable CDNs for QR generation and scanning -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+</head>
+<body class="dark-theme">
+    <div class="glass-container">
+        <header>
+            <h1>OptiTransfer</h1>
+            <p>Air-gapped Optical File Transfer</p>
+            <div class="tabs">
+                <button id="tab-send" class="active">📤 Send</button>
+                <button id="tab-receive">📥 Receive</button>
+            </div>
+        </header>
+
+        <!-- Sender View -->
+        <main id="view-send" class="view active">
+            <div id="drop-zone" class="glass-card">
+                <p>Drag & Drop file here or</p>
+                <input type="file" id="file-input" hidden>
+                <button class="btn" onclick="document.getElementById('file-input').click()">Browse Files</button>
+            </div>
+            
+            <div id="sender-controls" class="hidden glass-card">
+                <div class="stats">
+                    <span id="send-filename">file.txt</span>
+                    <span id="send-progress">0%</span>
+                </div>
+                <div class="progress-bar"><div class="fill" id="send-fill"></div></div>
+                
+                <div class="controls">
+                    <label>FPS: <span id="fps-val">30</span></label>
+                    <input type="range" id="fps-slider" min="1" max="60" value="30">
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="qr-canvas"></canvas>
+                </div>
+                
+                <div class="button-group">
+                    <button id="btn-play-pause" class="btn">Pause</button>
+                    <button id="btn-fullscreen" class="btn">Fullscreen</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Receiver View -->
+        <main id="view-receive" class="view hidden">
+            <div class="glass-card scanner-container">
+                <div class="scanner-header">
+                    <select id="camera-select" class="glass-select"></select>
+                </div>
+                <video id="camera-stream" autoplay playsinline></video>
+                <canvas id="scan-canvas" hidden></canvas>
+                
+                <div class="stats mt-2">
+                    <span>Received: <span id="recv-count">0</span> / <span id="recv-total">?</span></span>
+                    <span id="recv-progress">0%</span>
+                </div>
+                <div class="progress-bar"><div class="fill" id="recv-fill"></div></div>
+                <p id="recv-status" class="status-text">Waiting for QR frames...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modules -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
