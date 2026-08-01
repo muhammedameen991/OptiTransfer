@@ -1,66 +1,97 @@
-/**
- * Manages the high-speed rendering of QR codes to the canvas.
- */
-export class FrameGenerator {
-    constructor(canvasId) {
-        this.canvas = document.getElementById(canvasId);
-        this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
-        this.frames = [];
-        this.currentIndex = 0;
-        this.fps = 30;
-        this.isPlaying = false;
-        this.animationId = null;
-        this.lastDrawTime = 0;
-        this.onProgress = null;
+// frameGenerator.js
+// Simple Animation Frame Generator
+
+class FrameGenerator {
+    constructor(options = {}) {
+        this.canvas = options.canvas;
+        this.ctx = this.canvas.getContext("2d");
+
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
+
+        this.frame = 0;
+        this.running = false;
+
+        this.fps = options.fps || 60;
+        this.interval = 1000 / this.fps;
+
+        this.lastTime = 0;
+
+        this.update = options.update || function () {};
+        this.render = options.render || function () {};
     }
 
-    setFrames(frames) {
-        this.frames = frames;
-        this.currentIndex = 0;
-    }
-
-    setFps(fps) {
-        this.fps = fps;
-    }
-
-    async drawFrame() {
-        if (!this.frames.length) return;
-        const data = this.frames[this.currentIndex];
-        
-        // Use standard QR code CDN logic
-        await QRCode.toCanvas(this.canvas, data, { 
-            width: this.canvas.width || 400, 
-            margin: 2, 
-            errorCorrectionLevel: 'L' // Low EC for maximum data density
-        });
-
-        if (this.onProgress) {
-            this.onProgress(this.currentIndex, this.frames.length);
-        }
-
-        this.currentIndex = (this.currentIndex + 1) % this.frames.length;
-    }
-
-    loop(timestamp) {
-        if (!this.isPlaying) return;
-
-        const interval = 1000 / this.fps;
-        if (timestamp - this.lastDrawTime >= interval) {
-            this.drawFrame();
-            this.lastDrawTime = timestamp;
-        }
-        this.animationId = requestAnimationFrame(this.loop.bind(this));
-    }
 
     start() {
-        if (this.isPlaying) return;
-        this.isPlaying = true;
-        this.lastDrawTime = performance.now();
-        this.animationId = requestAnimationFrame(this.loop.bind(this));
+        if (this.running) return;
+
+        this.running = true;
+        requestAnimationFrame(this.loop.bind(this));
     }
 
-    pause() {
-        this.isPlaying = false;
-        if (this.animationId) cancelAnimationFrame(this.animationId);
+
+    stop() {
+        this.running = false;
+    }
+
+
+    loop(time) {
+        if (!this.running) return;
+
+        if (time - this.lastTime >= this.interval) {
+
+            this.frame++;
+
+            this.update({
+                frame: this.frame,
+                time: time
+            });
+
+            this.clear();
+
+            this.render({
+                ctx: this.ctx,
+                frame: this.frame
+            });
+
+            this.lastTime = time;
+        }
+
+        requestAnimationFrame(this.loop.bind(this));
+    }
+
+
+    clear() {
+        this.ctx.clearRect(
+            0,
+            0,
+            this.width,
+            this.height
+        );
+    }
+
+
+    generateFrames(count, callback) {
+
+        for (let i = 0; i < count; i++) {
+
+            this.frame = i;
+
+            this.clear();
+
+            this.render({
+                ctx: this.ctx,
+                frame: i
+            });
+
+            let image = this.canvas.toDataURL(
+                "image/png"
+            );
+
+            callback(image, i);
+        }
     }
 }
+
+
+export default FrameGenerator;
