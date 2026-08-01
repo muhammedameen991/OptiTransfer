@@ -1,0 +1,10 @@
+{
+  "name": "OptiTransfer",
+  "short_name": "OptiTransfer",
+  "description": "Air-gapped Optical File Transfer",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#6e8efb",
+  "icons": []
+}
