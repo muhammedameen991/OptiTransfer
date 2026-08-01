@@ -1,77 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-width=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OptiTransfer | Optical Data Transfer</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="manifest" href="manifest.json">
-    <!-- Offline-capable CDNs for QR generation and scanning -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<meta name="theme-color" content="#2563eb">
+<meta name="description"
+content="OptiTransfer - Fast Offline Optical QR File Transfer">
+
+<meta name="keywords"
+content="QR Transfer, Offline File Transfer, Optical Transfer, PWA">
+
+<meta name="author" content="Muhammed Ameen">
+
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="OptiTransfer">
+
+<link rel="manifest" href="./manifest.json">
+
+<link rel="icon"
+href="./icons/icon-192.png"
+sizes="192x192">
+
+<link rel="apple-touch-icon"
+href="./icons/icon-192.png">
+
+<link rel="stylesheet"
+href="./css/style.css">
+
+<title>OptiTransfer | Offline Optical File Transfer</title>
+
+<!-- Local Libraries -->
+<script defer src="./js/libs/qrcode.min.js"></script>
+<script defer src="./js/libs/jsQR.js"></script>
+
 </head>
+
 <body class="dark-theme">
-    <div class="glass-container">
-        <header>
-            <h1>OptiTransfer</h1>
-            <p>Air-gapped Optical File Transfer</p>
-            <div class="tabs">
-                <button id="tab-send" class="active">📤 Send</button>
-                <button id="tab-receive">📥 Receive</button>
-            </div>
-        </header>
 
-        <!-- Sender View -->
-        <main id="view-send" class="view active">
-            <div id="drop-zone" class="glass-card">
-                <p>Drag & Drop file here or</p>
-                <input type="file" id="file-input" hidden>
-                <button class="btn" onclick="document.getElementById('file-input').click()">Browse Files</button>
-            </div>
-            
-            <div id="sender-controls" class="hidden glass-card">
-                <div class="stats">
-                    <span id="send-filename">file.txt</span>
-                    <span id="send-progress">0%</span>
-                </div>
-                <div class="progress-bar"><div class="fill" id="send-fill"></div></div>
-                
-                <div class="controls">
-                    <label>FPS: <span id="fps-val">30</span></label>
-                    <input type="range" id="fps-slider" min="1" max="60" value="30">
-                </div>
-                
-                <div class="canvas-container">
-                    <canvas id="qr-canvas"></canvas>
-                </div>
-                
-                <div class="button-group">
-                    <button id="btn-play-pause" class="btn">Pause</button>
-                    <button id="btn-fullscreen" class="btn">Fullscreen</button>
-                </div>
-            </div>
-        </main>
+<div id="loading-screen">
 
-        <!-- Receiver View -->
-        <main id="view-receive" class="view hidden">
-            <div class="glass-card scanner-container">
-                <div class="scanner-header">
-                    <select id="camera-select" class="glass-select"></select>
-                </div>
-                <video id="camera-stream" autoplay playsinline></video>
-                <canvas id="scan-canvas" hidden></canvas>
-                
-                <div class="stats mt-2">
-                    <span>Received: <span id="recv-count">0</span> / <span id="recv-total">?</span></span>
-                    <span id="recv-progress">0%</span>
-                </div>
-                <div class="progress-bar"><div class="fill" id="recv-fill"></div></div>
-                <p id="recv-status" class="status-text">Waiting for QR frames...</p>
-            </div>
-        </main>
-    </div>
+<h1>OptiTransfer</h1>
 
-    <!-- Modules -->
-    <script type="module" src="js/app.js"></script>
+<p>Loading...</p>
+
+</div>
+
+<div class="glass-container">
+
+<header>
+
+<h1>OptiTransfer</h1>
+
+<p>Air-Gapped Optical File Transfer</p>
+
+<div class="tabs">
+
+<button
+id="tab-send"
+class="active">
+
+📤 Send
+
+</button>
+
+<button
+id="tab-receive">
+
+📥 Receive
+
+</button>
+
+</div>
+
+</header>
+
+<!-- SEND -->
+
+<main
+id="view-send"
+class="view active">
+
+<div
+id="drop-zone"
+class="glass-card">
+
+<p>
+
+Drag & Drop File Here
+
+</p>
+
+<p>
+
+or
+
+</p>
+
+<input
+type="file"
+id="file-input"
+hidden>
+
+<button
+class="btn"
+id="browse-btn">
+
+Browse Files
+
+</button>
+
+</div>
+
+<div
+id="sender-controls"
+class="glass-card hidden">
+
+<div class="stats">
+
+<span id="send-filename">
+
+No File
+
+</span>
+
+<span id="send-progress">
+
+0%
+
+</span>
+
+</div>
+
+<div class="progress-bar">
+
+<div
+id="send-fill"
+class="fill">
+
+</div>
+
+</div>
+
+<div class="controls">
+
+<label>
+
+FPS
+
+<span id="fps-val">
+
+15
+
+</span>
+
+</label>
+
+<input
+
+type="range"
+
+id="fps-slider"
+
+min="5"
+
+max="20"
+
+value="15">
+
+</div>
+
+<div class="canvas-container">
+
+<canvas id="qr-canvas"></canvas>
+
+</div>
+
+<div class="button-group">
+
+<button
+id="btn-play-pause"
+class="btn">
+
+Pause
+
+</button>
+
+<button
+id="btn-fullscreen"
+class="btn">
+
+Fullscreen
+
+</button>
+
+</div>
+
+</div>
+
+</main>
+
+<!-- RECEIVE -->
+
+<main
+
+id="view-receive"
+
+class="view hidden">
+
+<div class="glass-card scanner-container">
+
+<div class="scanner-header">
+
+<select
+
+id="camera-select"
+
+class="glass-select">
+
+</select>
+
+</div>
+
+<video
+
+id="camera-stream"
+
+autoplay
+
+playsinline
+
+muted>
+
+</video>
+
+<canvas
+
+id="scan-canvas"
+
+hidden>
+
+</canvas>
+
+<div class="stats">
+
+<span>
+
+Received
+
+<span id="recv-count">
+
+0
+
+</span>
+
+/
+
+<span id="recv-total">
+
+?
+
+</span>
+
+</span>
+
+<span id="recv-progress">
+
+0%
+
+</span>
+
+</div>
+
+<div class="progress-bar">
+
+<div
+id="recv-fill"
+class="fill">
+
+</div>
+
+</div>
+
+<p
+id="recv-status"
+class="status-text">
+
+Waiting for QR Frames...
+
+</p>
+
+</div>
+
+</main>
+
+</div>
+
+<script type="module" src="./js/app.js"></script>
+
+<script>
+
+document
+.getElementById("browse-btn")
+.addEventListener("click",()=>{
+
+document
+.getElementById("file-input")
+.click();
+
+});
+
+window.addEventListener("load",()=>{
+
+const loading=document.getElementById("loading-screen");
+
+loading.style.opacity="0";
+
+setTimeout(()=>{
+
+loading.remove();
+
+},400);
+
+});
+
+if("serviceWorker" in navigator){
+
+window.addEventListener("load",()=>{
+
+navigator.serviceWorker
+.register("./service-worker.js")
+.then(()=>{
+
+console.log("Service Worker Registered");
+
+})
+.catch(console.error);
+
+});
+
+}
+
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt",(e)=>{
+
+e.preventDefault();
+
+deferredPrompt=e;
+
+console.log("PWA Install Available");
+
+});
+
+</script>
+
 </body>
+
 </html>
